@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <title>Superchat Genie — AI Writing & Editorial Studio</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+
+  <!-- TOP NAVIGATION BAR -->
+  <header class="topbar">
+    <div class="brand-group">
+      <!-- Authentic Superchat Geometric Ribbon SVG + Custom Write Emblem -->
+      <div class="superchat-logo-wrap">
+        <!-- Exact Superchat Dual Speech-Bubble "S" Logo -->
+        <svg width="30" height="30" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path
+            d="M 52 21
+               L 72 8
+               L 72 21
+               L 76 21
+               Q 86 21 86 31
+               L 86 35
+               L 74 35
+               L 74 32
+               Q 74 29 71 29
+               L 30 29
+               Q 26 29 26 33
+               L 26 42
+               Q 26 46 30 46
+               L 70 46
+               Q 86 46 86 60
+               L 86 69
+               Q 86 79 74 79
+               L 48 79
+               L 28 92
+               L 28 79
+               L 24 79
+               Q 14 79 14 69
+               L 14 65
+               L 26 65
+               L 26 68
+               Q 26 71 29 71
+               L 70 71
+               Q 74 71 74 67
+               L 74 58
+               Q 74 54 70 54
+               L 30 54
+               Q 14 54 14 40
+               L 14 31
+               Q 14 21 26 21
+               Z"
+            stroke="#19191B"
+            stroke-width="3.6"
+            stroke-linejoin="round"
+            stroke-linecap="round"
+          />
+        </svg>
+       <div class="brand-title">Superchat <span>Genie</span></div>
+   </div>
+
+    <!-- DEDICATED WORKSPACE VIEW SWITCHER -->
+    <nav class="nav-switcher">
+      <button class="nav-pill active" id="nav-editor" onclick="switchView('editor')">
+        <i class="fa-solid fa-pen-nib"></i> Document Editor
+      </button>
+      <button class="nav-pill" id="nav-grammar" onclick="switchView('grammar')">
+        <i class="fa-solid fa-spell-check"></i> Grammar & Spelling
+      </button>
+      <button class="nav-pill" id="nav-rewrite" onclick="switchView('rewrite')">
+        <i class="fa-solid fa-wand-magic-sparkles"></i> Rewrite & Tone
+      </button>
+      <button class="nav-pill" id="nav-generator" onclick="switchView('generator')">
+        <i class="fa-solid fa-file-circle-plus"></i> AI Writer
+      </button>
+      <button class="nav-pill" id="nav-prompt" onclick="switchView('prompt')">
+        <i class="fa-solid fa-terminal"></i> Improve My Prompt
+      </button>
+      <button class="nav-pill" id="nav-analytics" onclick="switchView('analytics')">
+        <i class="fa-solid fa-chart-line"></i> Readability Score
+      </button>
+    </nav>
+
+    <!-- FILE & UTILITY CONTROLS -->
+    <div class="topbar-actions">
+      <label class="btn btn-sm" style="cursor:pointer;" title="Import DOCX, PDF, or TXT">
+        <i class="fa-solid fa-file-arrow-up"></i> Import
+        <input type="file" id="fileUpload" accept=".docx,.pdf,.txt" class="hidden" onchange="handleFileUpload(event)" />
+      </label>
+
+      <div class="dropdown">
+        <button class="btn btn-sm"><i class="fa-solid fa-download"></i> Export <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i></button>
+        <div class="dropdown-menu">
+          <button class="dropdown-item" onclick="exportDocument('docx')"><i class="fa-solid fa-file-word" style="color:#2563eb;"></i> Word (.docx)</button>
+          <button class="dropdown-item" onclick="exportDocument('pdf')"><i class="fa-solid fa-file-pdf" style="color:#dc2626;"></i> PDF (.pdf)</button>
+          <button class="dropdown-item" onclick="exportDocument('txt')"><i class="fa-solid fa-file-lines" style="color:#64748b;"></i> Plain Text (.txt)</button>
+        </div>
+      </div>
+
+      <button class="btn btn-icon" onclick="openVersionHistory()" title="Version History"><i class="fa-solid fa-clock-rotate-left"></i></button>
+      <button class="btn btn-icon" onclick="openCompareModal()" title="Compare Documents"><i class="fa-solid fa-code-compare"></i></button>
+      <button class="btn btn-icon" onclick="toggleDarkMode()" title="Toggle Dark/Light Theme"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+    </div>
+  </header>
+
+  <!-- MAIN WORKSPACE BODY -->
+  <div class="app-body">
+
+    <!-- PERSISTENT LEFT SIDEBAR: DOCUMENTS, FOLDERS & TEMPLATES -->
+    <aside class="sidebar-left">
+      <div class="sidebar-header">
+        <button class="btn btn-primary" style="width:100%;" onclick="createNewDoc()">
+          <i class="fa-solid fa-plus"></i> New Document
+        </button>
+        <div class="search-wrap">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="docSearch" class="input" oninput="renderDocList()" placeholder="Search documents..." />
+        </div>
+        <select id="folderFilter" class="select" style="font-size:12px;" onchange="renderDocList()">
+          <option value="ALL">All Folders</option>
+          <option value="General">General</option>
+          <option value="Work & Business">Work & Business</option>
+          <option value="Academic">Academic</option>
+          <option value="Creative">Creative</option>
+        </select>
+      </div>
+
+      <div class="doc-list" id="docList"></div>
+
+      <div class="templates-box">
+        <span class="section-label">Starter Templates</span>
+        <div class="template-grid">
+          <button class="template-btn" onclick="applyTemplate('email')"><i class="fa-solid fa-envelope" style="color:#4f46e5;"></i> Email</button>
+          <button class="template-btn" onclick="applyTemplate('proposal')"><i class="fa-solid fa-briefcase" style="color:#059669;"></i> Proposal</button>
+          <button class="template-btn" onclick="applyTemplate('blog')"><i class="fa-solid fa-newspaper" style="color:#d97706;"></i> Blog Post</button>
+          <button class="template-btn" onclick="applyTemplate('resume')"><i class="fa-solid fa-user-tie" style="color:#7c3aed;"></i> Cover Letter</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MULTI-PAGE STAGE -->
+    <div class="main-stage">
+
+      <!-- PAGE 1: MAIN RICH-TEXT DOCUMENT EDITOR + COPILOT DRAWER -->
+      <section id="view-editor" class="view-section active">
+        <div class="editor-column">
+          <div class="editor-toolbar">
+            <select class="select" style="width:130px; padding:4px 8px; font-size:12px;" onchange="execCmd('formatBlock', this.value); this.value='';">
+              <option value="">Text Style</option>
+              <option value="H1">Heading 1</option>
+              <option value="H2">Heading 2</option>
+              <option value="H3">Heading 3</option>
+              <option value="P">Paragraph</option>
+            </select>
+            <div class="toolbar-divider"></div>
+            <button class="tool-btn" onclick="execCmd('bold')" title="Bold"><i class="fa-solid fa-bold"></i></button>
+            <button class="tool-btn" onclick="execCmd('italic')" title="Italic"><i class="fa-solid fa-italic"></i></button>
+            <button class="tool-btn" onclick="execCmd('underline')" title="Underline"><i class="fa-solid fa-underline"></i></button>
+            <div class="toolbar-divider"></div>
+            <button class="tool-btn" onclick="execCmd('insertUnorderedList')" title="Bullet List"><i class="fa-solid fa-list-ul"></i></button>
+            <button class="tool-btn" onclick="execCmd('insertOrderedList')" title="Numbered List"><i class="fa-solid fa-list-ol"></i></button>
+            <button class="tool-btn" onclick="insertLink()" title="Insert Hyperlink"><i class="fa-solid fa-link"></i></button>
+            <button class="tool-btn" onclick="insertTable()" title="Insert Table"><i class="fa-solid fa-table"></i></button>
+            <div class="toolbar-divider"></div>
+            <button class="tool-btn" onclick="execCmd('undo')" title="Undo"><i class="fa-solid fa-rotate-left"></i></button>
+            <button class="tool-btn" onclick="execCmd('redo')" title="Redo"><i class="fa-solid fa-rotate-right"></i></button>
+
+            <div style="flex:1;"></div>
+            <button class="btn btn-sm" onclick="copyEditorText()"><i class="fa-regular fa-copy"></i> Copy</button>
+            <button class="btn btn-sm" style="background:var(--brand-soft); color:var(--brand-primary); border-color:var(--brand-border);" onclick="manualSnapshot()">
+              <i class="fa-solid fa-bookmark"></i> Save Version
+            </button>
+          </div>
+
+          <div class="paper-scroll">
+            <div class="paper-sheet">
+              <div class="paper-header">
+                <input type="text" id="docTitle" class="doc-title-input" oninput="scheduleAutoSave()" placeholder="Untitled Document..." />
+                <select id="docFolder" class="select" style="width:155px; font-size:12px;" onchange="scheduleAutoSave()">
+                  <option value="General">General</option>
+                  <option value="Work & Business">Work & Business</option>
+                  <option value="Academic">Academic</option>
+                  <option value="Creative">Creative</option>
+                </select>
+              </div>
+              <div id="editor" contenteditable="true" oninput="onEditorInput()"></div>
+            </div>
+          </div>
+
+          <div class="statusbar">
+            <div class="metrics-group">
+              <span><strong id="wordCount">0</strong> words</span>
+              <span><strong id="charCount">0</strong> characters</span>
+              <span><strong id="sentenceCount">0</strong> sentences</span>
+              <span><i class="fa-regular fa-clock"></i> <strong id="readTime">0 min</strong> read</span>
+            </div>
+            <span style="font-size:11px; color:var(--text-muted);">Highlight any sentence to edit only that selection</span>
+          </div>
+        </div>
+
+        <aside class="sidebar-right">
+          <div class="copilot-tabs">
+            <button class="copilot-tab active" id="ctab-quick" onclick="switchCopilotTab('quick')"><i class="fa-solid fa-bolt"></i>Quick Fix</button>
+            <button class="copilot-tab" id="ctab-advisor" onclick="switchCopilotTab('advisor')"><i class="fa-solid fa-lightbulb"></i>Advisor</button>
+            <button class="copilot-tab" id="ctab-tools" onclick="switchCopilotTab('tools')"><i class="fa-solid fa-toolbox"></i>AI Tools</button>
+            <button class="copilot-tab" id="ctab-translate" onclick="switchCopilotTab('translate')"><i class="fa-solid fa-language"></i>Translate</button>
+          </div>
+
+          <div class="copilot-body">
+            <div id="cpanel-quick">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <span class="section-label" style="margin:0;">Instant Grammar Scan</span>
+                <button class="btn btn-primary btn-sm" onclick="runGrammarCheck()">Scan Document</button>
+              </div>
+              <div id="quickGrammarSummary" class="hidden" style="display:flex; justify-content:space-between; align-items:center; padding:8px 10px; background:var(--bg-subtle); border-radius:8px; margin-bottom:10px;">
+                <span id="quickIssueCount" style="font-weight:700; font-size:12px;">0 issues</span>
+                <button class="btn btn-success btn-sm" onclick="applyAllGrammar()">Apply All</button>
+              </div>
+              <div id="quickGrammarList">
+                <div class="card" style="text-align:center; color:var(--text-muted); font-size:12.5px; padding:28px 16px;">
+                  Click <strong>Scan Document</strong> to detect grammar, spelling, punctuation, and tense errors, or open the full <strong>Grammar & Spelling</strong> workspace above.
+                </div>
+              </div>
+            </div>
+
+            <div id="cpanel-advisor" class="hidden">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <span class="section-label" style="margin:0;">Editorial Advisor</span>
+                <button class="btn btn-primary btn-sm" onclick="runAdvisor()">Analyze Ideas</button>
+              </div>
+              <div id="advisorResults">
+                <div class="card" style="text-align:center; color:var(--text-muted); font-size:12.5px; padding:28px 16px;">
+                  Get intelligent recommendations on stronger hooks, missing points, better vocabulary, and argument structure.
+                </div>
+              </div>
+            </div>
+
+            <div id="cpanel-tools" class="hidden">
+              <span class="section-label">Document Utilities</span>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px;">
+                <button class="btn btn-sm" onclick="runExtraTool('summarize')"><i class="fa-solid fa-compress"></i> Summarize</button>
+                <button class="btn btn-sm" onclick="runExtraTool('outline')"><i class="fa-solid fa-sitemap"></i> Outline</button>
+                <button class="btn btn-sm" onclick="runExtraTool('titles')"><i class="fa-solid fa-heading"></i> Title Ideas</button>
+                <button class="btn btn-sm" onclick="runExtraTool('examples')"><i class="fa-solid fa-flask"></i> Examples</button>
+                <button class="btn btn-sm" style="grid-column:span 2;" onclick="runExtraTool('originality')"><i class="fa-solid fa-shield-halved"></i> Originality & Cliché Audit</button>
+              </div>
+              <div style="padding:10px; background:var(--bg-subtle); border-radius:8px; border:1px solid var(--border-color); margin-bottom:14px;">
+                <span class="section-label">Citation & Reference Formatter</span>
+                <div style="display:flex; gap:6px;">
+                  <select id="citeStyle" class="select" style="font-size:12px;">
+                    <option>APA 7th Edition</option><option>MLA 9th Edition</option><option>Chicago Style</option><option>IEEE</option>
+                  </select>
+                  <button class="btn btn-primary btn-sm" onclick="runExtraTool('citations', document.getElementById('citeStyle').value)">Format</button>
+                </div>
+              </div>
+              <div id="toolOutputBox" class="hidden">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                  <strong style="font-size:12px; color:var(--brand-primary);">Generated Result</strong>
+                  <button class="btn btn-success btn-sm" onclick="insertToolOutput()">Insert into Doc</button>
+                </div>
+                <div id="toolOutputContent" class="card" style="font-size:12.5px; max-height:260px; overflow-y:auto;"></div>
+              </div>
+            </div>
+
+            <div id="cpanel-translate" class="hidden">
+              <span class="section-label">Multi-Language Translation</span>
+              <p style="font-size:12px; color:var(--text-secondary); margin-bottom:10px;">Translate your current document while preserving tone and formatting.</p>
+              <select id="targetLang" class="select" style="margin-bottom:10px;">
+                <option>Spanish</option><option>French</option><option>German</option><option>Hindi</option><option>Telugu</option><option>Japanese</option><option>Arabic</option>
+              </select>
+              <button class="btn btn-primary" style="width:100%;" onclick="runExtraTool('translate', document.getElementById('targetLang').value)">Translate Document</button>
+              <div id="translateOutputBox" class="hidden" style="margin-top:14px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                  <strong style="font-size:12px; color:var(--brand-primary);">Translated Text</strong>
+                  <button class="btn btn-success btn-sm" onclick="insertTranslatedOutput()">Insert into Doc</button>
+                </div>
+                <div id="translateOutputContent" class="card" style="font-size:12.5px; max-height:280px; overflow-y:auto;"></div>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <!-- PAGE 2: DEDICATED GRAMMAR & SPELLING LAB -->
+      <section id="view-grammar" class="view-section">
+        <div class="dedicated-page">
+          <div class="page-container">
+            <div class="page-header-card">
+              <div>
+                <h2><i class="fa-solid fa-spell-check" style="color:var(--brand-primary); margin-right:8px;"></i>Grammar, Spelling & Mechanics Inspector</h2>
+                <p>Deep linguistic scan for grammar errors, spelling mistakes, punctuation, tense consistency, and sentence fragments.</p>
+              </div>
+              <div style="display:flex; gap:10px;">
+                <button class="btn btn-success hidden" id="pageApplyAllBtn" onclick="applyAllGrammar()"><i class="fa-solid fa-check-double"></i> Apply All Corrections</button>
+                <button class="btn btn-primary" onclick="runGrammarCheck()"><i class="fa-solid fa-magnifying-glass"></i> Run Full Scan</button>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="card">
+                <div class="card-title">
+                  <span>Active Document Text</span>
+                  <span class="badge badge-indigo">Synced with Editor</span>
+                </div>
+                <div id="grammarDocMirror" style="font-size:14px; line-height:1.75; color:var(--text-secondary); max-height:60vh; overflow-y:auto; white-space:pre-wrap;"></div>
+              </div>
+
+              <div class="card">
+                <div class="card-title">
+                  <span>Detected Corrections & Explanations</span>
+                  <span id="pageGrammarBadge" class="badge badge-rose">0 Issues</span>
+                </div>
+                <div id="pageGrammarList" style="max-height:60vh; overflow-y:auto;">
+                  <p style="color:var(--text-muted); text-align:center; padding:40px 10px;">Click <strong>Run Full Scan</strong> to inspect your active document.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 3: DEDICATED REWRITE & TONE STUDIO -->
+      <section id="view-rewrite" class="view-section">
+        <div class="dedicated-page">
+          <div class="page-container">
+            <div class="page-header-card">
+              <div>
+                <h2><i class="fa-solid fa-wand-magic-sparkles" style="color:var(--brand-primary); margin-right:8px;"></i>AI Rewrite & Tone Transformation Studio</h2>
+                <p>Select a target voice and transformation mode to refine clarity, flow, and style without losing original meaning.</p>
+              </div>
+              <button class="btn" onclick="syncEditorToRewrite()"><i class="fa-solid fa-rotate"></i> Pull Latest Text from Editor</button>
+            </div>
+
+            <div class="card">
+              <span class="section-label">Step 1: Choose Target Tone (12 Styles)</span>
+              <div class="tone-grid" id="toneChipsContainer">
+                <button class="tone-chip selected" onclick="selectToneChip(this, 'Professional')">Professional</button>
+                <button class="tone-chip" onclick="selectToneChip(this, 'Formal')">Formal</button>
+                <button class="tone-chip" onclick="selectToneChip(this, 'Informal')">Informal</button>
+                <button class="tone-chip" onclick="selectToneChip(this, 'Friendly')">Friendly</button>
+                <button class="tone-chip" onclick="selectToneChip(this, 'Conversational')">Conversational</button>
+                <button class="tone-chip" onclick="selectToneChip(this, 'Academic')">Academic</button>
+                <button class="tone-chip" onclick="selectToneChip(this, 'Creative')">Creative</button>
+                <button class="tone-chip" onclick="selectToneChip(this, 'Persuasive')">Persuasive</button>
+                <button class="tone-chip" onclick="selectToneChip(this, 'Confident')">Confident</button>
+                <button class="tone-chip" onclick="selectToneChip(this, 'Concise')">Concise</button>
+                <button class="tone-chip" onclick="selectToneChip(this, 'Enthusiastic')">Enthusiastic</button>
+                <button class="tone-chip" onclick="selectToneChip(this, 'Technical')">Technical</button>
+              </div>
+
+              <span class="section-label" style="margin-top:16px;">Step 2: Choose Enhancement Operation</span>
+              <div class="action-grid">
+                <button class="action-card-btn" onclick="runRewriteStudio('Rewrite and polish sentences')"><i class="fa-solid fa-pen-fancy" style="color:#4f46e5;"></i> Rewrite Sentences</button>
+                <button class="action-card-btn" onclick="runRewriteStudio('Improve sentence clarity and readability')"><i class="fa-solid fa-eye" style="color:#059669;"></i> Improve Clarity</button>
+                <button class="action-card-btn" onclick="runRewriteStudio('Make writing sound highly professional')"><i class="fa-solid fa-briefcase" style="color:#2563eb;"></i> Make Professional</button>
+                <button class="action-card-btn" onclick="runRewriteStudio('Make writing more engaging and compelling')"><i class="fa-solid fa-fire" style="color:#e11d48;"></i> Make Engaging</button>
+                <button class="action-card-btn" onclick="runRewriteStudio('Simplify complex sentences for easy reading')"><i class="fa-solid fa-seedling" style="color:#16a34a;"></i> Simplify Text</button>
+                <button class="action-card-btn" onclick="runRewriteStudio('Expand short content with richer details and depth')"><i class="fa-solid fa-up-right-and-down-left-from-center" style="color:#7c3aed;"></i> Expand Content</button>
+                <button class="action-card-btn" onclick="runRewriteStudio('Shorten lengthy content while keeping core meaning')"><i class="fa-solid fa-scissors" style="color:#d97706;"></i> Shorten & Trim</button>
+                <button class="action-card-btn" onclick="runRewriteStudio('Upgrade vocabulary and eliminate repetitive words')"><i class="fa-solid fa-book-open" style="color:#0891b2;"></i> Upgrade Vocabulary</button>
+                <button class="action-card-btn" onclick="runRewriteStudio('Improve paragraph flow and transitions between paragraphs')"><i class="fa-solid fa-link" style="color:#4f46e5;"></i> Paragraph Flow</button>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="card">
+                <div class="card-title"><span>Original Passage</span></div>
+                <textarea id="rewriteSourceBox" class="textarea" rows="11" placeholder="Your document text appears here, or paste any passage you want to rewrite..."></textarea>
+              </div>
+              <div class="card">
+                <div class="card-title">
+                  <span>AI Rewritten Result</span>
+                  <div style="display:flex; gap:6px;">
+                    <button class="btn btn-sm" onclick="copyRewriteResult()"><i class="fa-regular fa-copy"></i> Copy</button>
+                    <button class="btn btn-success btn-sm" onclick="sendRewriteToEditor()"><i class="fa-solid fa-check"></i> Apply to Document</button>
+                  </div>
+                </div>
+                <div id="rewriteResultBox" style="min-height:225px; padding:12px; border-radius:8px; background:var(--bg-subtle); border:1px solid var(--border-color); font-size:14px; line-height:1.7;">
+                  <span style="color:var(--text-muted);">Select a tone and click any enhancement button above to generate your rewritten version here.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 4: DEDICATED AI CONTENT GENERATOR -->
+      <section id="view-generator" class="view-section">
+        <div class="dedicated-page">
+          <div class="page-container">
+            <div class="page-header-card">
+              <div>
+                <h2><i class="fa-solid fa-file-circle-plus" style="color:var(--brand-primary); margin-right:8px;"></i>AI Long-Form Content Generator</h2>
+                <p>Generate complete emails, proposals, reports, essays, blogs, resumes, and technical documentation from structured briefs.</p>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="card" style="display:flex; flex-direction:column; gap:12px;">
+                <div class="card-title"><span>Content Brief & Parameters</span></div>
+                <div class="grid-2" style="gap:10px;">
+                  <div>
+                    <span class="section-label">Format / Document Type</span>
+                    <select id="genType" class="select">
+                      <option>Email</option><option>Business Proposal</option><option>Report</option><option>Essay</option>
+                      <option>Article</option><option>Blog Post</option><option>Social Media Post</option><option>Product Description</option>
+                      <option>Resume Content</option><option>Cover Letter</option><option>Meeting Summary</option><option>Project Documentation</option>
+                    </select>
+                  </div>
+                  <div>
+                    <span class="section-label">Tone of Voice</span>
+                    <select id="genTone" class="select">
+                      <option>Professional</option><option>Persuasive</option><option>Academic</option><option>Friendly</option><option>Creative</option><option>Technical</option><option>Concise</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="grid-2" style="gap:10px;">
+                  <div>
+                    <span class="section-label">Target Audience</span>
+                    <input id="genAudience" type="text" class="input" placeholder="e.g., Enterprise clients, Hiring manager" />
+                  </div>
+                  <div>
+                    <span class="section-label">Target Length</span>
+                    <select id="genLength" class="select">
+                      <option>Short (100-200 words)</option><option selected>Medium (300-500 words)</option><option>Long (700+ words)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <span class="section-label">Topic & Core Purpose *</span>
+                  <input id="genTopic" type="text" class="input" placeholder="e.g., Q4 Product Launch Strategy Memo for Engineering & Sales" />
+                </div>
+
+                <div>
+                  <span class="section-label">Key Points, Facts & Constraints</span>
+                  <textarea id="genPoints" class="textarea" rows="4" placeholder="List bullet points, key metrics, deadlines, or calls-to-action..."></textarea>
+                </div>
+
+                <button class="btn btn-primary" style="width:100%; padding:10px;" onclick="submitContentGenerator()">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Draft
+                </button>
+              </div>
+
+              <div class="card" style="display:flex; flex-direction:column;">
+                <div class="card-title">
+                  <span>Generated Draft Preview</span>
+                  <button class="btn btn-success btn-sm hidden" id="openDraftInEditorBtn" onclick="openGeneratedInEditor()">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Open in Main Editor
+                  </button>
+                </div>
+                <div id="generatedDraftPreview" style="flex:1; padding:14px; border-radius:8px; background:var(--bg-subtle); border:1px solid var(--border-color); overflow-y:auto; max-height:460px; line-height:1.7;">
+                  <span style="color:var(--text-muted);">Fill out the content brief on the left and click <strong>Generate Draft</strong> to create a structured document.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 5: DEDICATED "IMPROVE MY PROMPT" STUDIO -->
+      <section id="view-prompt" class="view-section">
+        <div class="dedicated-page">
+          <div class="page-container">
+            <div class="page-header-card">
+              <div>
+                <h2><i class="fa-solid fa-terminal" style="color:var(--brand-primary); margin-right:8px;"></i>Improve My Prompt — Prompt Engineering Lab</h2>
+                <p>Diagnose vague prompts, inject role & formatting constraints, compare before-and-after versions, and generate variations.</p>
+              </div>
+            </div>
+
+            <div class="card">
+              <span class="section-label">Enter Your Rough or Incomplete Prompt</span>
+              <div style="display:flex; gap:10px;">
+                <textarea id="rawPromptInput" class="textarea" rows="2" placeholder="e.g., Write a cold email to sell our AI analytics tool to SaaS founders"></textarea>
+                <button class="btn btn-primary" style="white-space:nowrap; padding:0 20px;" onclick="runPromptImprover()">
+                  <i class="fa-solid fa-bolt"></i> Optimize Prompt
+                </button>
+              </div>
+            </div>
+
+            <div id="promptResultsArea" class="hidden" style="display:flex; flex-direction:column; gap:16px;">
+              <div class="grid-2">
+                <div class="card" style="border-color:rgba(225,29,72,0.3);">
+                  <div class="card-title"><span style="color:var(--accent-rose);">Original Prompt & Missing Requirements</span></div>
+                  <p id="origPromptDisplay" style="font-style:italic; color:var(--text-secondary); margin-bottom:12px;"></p>
+                  <span class="section-label">Identified Gaps</span>
+                  <ul id="missingPromptList" style="padding-left:18px; color:var(--accent-rose); font-size:13px; line-height:1.6;"></ul>
+                </div>
+
+                <div class="card" style="border-color:rgba(5,150,105,0.35);">
+                  <div class="card-title">
+                    <span style="color:var(--accent-emerald);">Optimized Production Prompt</span>
+                    <button class="btn btn-success btn-sm" onclick="copyOptimizedPrompt()"><i class="fa-regular fa-copy"></i> Copy Prompt</button>
+                  </div>
+                  <pre id="improvedPromptDisplay" style="white-space:pre-wrap; font-family:'JetBrains Mono', monospace; font-size:12px; background:var(--bg-subtle); padding:12px; border-radius:8px; border:1px solid var(--border-color); max-height:260px; overflow-y:auto;"></pre>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-title">
+                  <span>Engineering Breakdown</span>
+                  <span class="badge badge-indigo">Recommended Role: <span id="promptRoleBadge"></span></span>
+                </div>
+                <p id="promptExplanation" style="color:var(--text-secondary); font-size:13.5px;"></p>
+              </div>
+
+              <div class="card">
+                <div class="card-title"><span>Alternative Prompt Variations</span></div>
+                <div id="promptVariations" class="grid-2"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 6: DEDICATED READABILITY & CONTENT ANALYTICS -->
+      <section id="view-analytics" class="view-section">
+        <div class="dedicated-page">
+          <div class="page-container">
+            <div class="page-header-card">
+              <div>
+                <h2><i class="fa-solid fa-chart-line" style="color:var(--brand-primary); margin-right:8px;"></i>Readability & Linguistic Quality Dashboard</h2>
+                <p>Evaluate readability score, clarity, grammar accuracy, active vs. passive voice ratio, and tone consistency.</p>
+              </div>
+              <button class="btn btn-primary" onclick="runAnalysis()"><i class="fa-solid fa-gauge-high"></i> Run Deep Analysis</button>
+            </div>
+
+            <div id="analyticsPlaceholder" class="card" style="text-align:center; padding:48px 20px; color:var(--text-muted);">
+              Click <strong>Run Deep Analysis</strong> to score your active document across 9 linguistic metrics.
+            </div>
+
+            <div id="analyticsDashboard" class="hidden" style="display:flex; flex-direction:column; gap:18px;">
+              <div class="grid-3">
+                <div class="stat-box">
+                  <div class="stat-number" style="color:var(--brand-primary);" id="scoreReadability">--</div>
+                  <div style="font-weight:700; margin-top:4px;">Readability Score</div>
+                  <div style="font-size:12px; color:var(--text-muted);" id="scoreLevel">--</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-number" style="color:var(--accent-emerald);" id="scoreClarity">--</div>
+                  <div style="font-weight:700; margin-top:4px;">Clarity Index</div>
+                  <div style="font-size:12px; color:var(--text-muted);" id="scoreVocab">Vocabulary: --</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-number" style="color:var(--accent-amber);" id="scoreGrammar">--</div>
+                  <div style="font-weight:700; margin-top:4px;">Grammar Accuracy</div>
+                  <div style="font-size:12px; color:var(--text-muted);" id="scoreTone">Tone: --</div>
+                </div>
+              </div>
+
+              <div class="grid-2">
+                <div class="card">
+                  <div class="card-title"><span>Voice Balance & Repetition</span></div>
+                  <p style="font-size:13px; margin-bottom:8px;">Active Voice: <strong id="activeVoiceTxt">0%</strong> &nbsp;|&nbsp; Passive Voice: <strong id="passiveVoiceTxt">0%</strong></p>
+                  <div style="height:10px; border-radius:99px; background:var(--accent-rose-soft); overflow:hidden; margin-bottom:16px;">
+                    <div id="activeVoiceBar" style="height:100%; width:70%; background:var(--accent-emerald);"></div>
+                  </div>
+                  <span class="section-label">Overused / Repeated Words</span>
+                  <div id="repeatedWordsBox" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+                </div>
+
+                <div class="card">
+                  <div class="card-title"><span>Actionable Improvement Recommendations</span></div>
+                  <ul id="actionableTipsList" style="padding-left:18px; line-height:1.7; color:var(--text-secondary); font-size:13.5px;"></ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- FLOATING STATUS BANNER -->
+  <div id="globalBanner" class="global-banner">
+    <i class="fa-solid fa-circle-notch fa-spin"></i>
+    <span id="globalBannerText">Processing...</span>
+  </div>
+
+  <!-- VERSION HISTORY MODAL -->
+  <div id="versionModal" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="card-title">
+        <span><i class="fa-solid fa-clock-rotate-left" style="color:var(--brand-primary); margin-right:6px;"></i>Document Version History</span>
+        <button class="btn btn-sm" onclick="closeModal('versionModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div id="versionList" style="max-height:340px; overflow-y:auto; display:flex; flex-direction:column; gap:8px;"></div>
+    </div>
+  </div>
+
+  <!-- DOCUMENT COMPARISON MODAL -->
+  <div id="compareModal" class="modal-backdrop">
+    <div class="modal-box" style="max-width:920px;">
+      <div class="card-title">
+        <span><i class="fa-solid fa-code-compare" style="color:var(--brand-primary); margin-right:6px;"></i>Side-by-Side Document Comparison</span>
+        <button class="btn btn-sm" onclick="closeModal('compareModal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+        <span style="font-size:12.5px; font-weight:600;">Compare active document against:</span>
+        <select id="compareDocSelect" class="select" style="max-width:300px;" onchange="renderComparison()"></select>
+      </div>
+      <div class="grid-2">
+        <div class="card" style="max-height:340px; overflow-y:auto;">
+          <div class="badge badge-indigo" style="margin-bottom:8px;" id="compLeftTitle">Current</div>
+          <div id="compLeftBody" style="white-space:pre-wrap; font-size:13px;"></div>
+        </div>
+        <div class="card" style="max-height:340px; overflow-y:auto;">
+          <div class="badge badge-emerald" style="margin-bottom:8px;" id="compRightTitle">Selected</div>
+          <div id="compRightBody" style="white-space:pre-wrap; font-size:13px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let documents = [];
+    let currentDocId = null;
+    let autoSaveTimer = null;
+    let currentCorrections = [];
+    let selectedTone = "Professional";
+    let latestRewriteHtml = "";
+    let latestGeneratedDraft = { title: "", html: "" };
+    let latestToolHtml = "";
+    let latestTranslateHtml = "";
+
+    window.addEventListener("DOMContentLoaded", async () => {
+      await loadDocuments();
+      if (documents.length > 0) selectDocument(documents[0].id);
+    });
+
+    function switchView(viewName) {
+      document.querySelectorAll(".view-section").forEach(v => v.classList.remove("active"));
+      document.querySelectorAll(".nav-pill").forEach(p => p.classList.remove("active"));
+      document.getElementById(`view-${viewName}`).classList.add("active");
+      document.getElementById(`nav-${viewName}`).classList.add("active");
+
+      if (viewName === "grammar") {
+        document.getElementById("grammarDocMirror").textContent = document.getElementById("editor").innerText;
+      } else if (viewName === "rewrite") {
+        syncEditorToRewrite();
+      }
+    }
+
+    function switchCopilotTab(tab) {
+      ["quick", "advisor", "tools", "translate"].forEach(t => {
+        document.getElementById(`cpanel-${t}`).classList.add("hidden");
+        document.getElementById(`ctab-${t}`).classList.remove("active");
+      });
+      document.getElementById(`cpanel-${tab}`).classList.remove("hidden");
+      document.getElementById(`ctab-${tab}`).classList.add("active");
+    }
+
+    function toggleDarkMode() {
+      document.documentElement.classList.toggle("dark");
+      const isDark = document.documentElement.classList.contains("dark");
+      document.getElementById("themeIcon").className = isDark ? "fa-solid fa-sun" : "fa-solid fa-moon";
+    }
+
+    function openModal(id) { document.getElementById(id).classList.add("show"); }
+    function closeModal(id) { document.getElementById(id).classList.remove("show"); }
+
+    function showBanner(msg, isError = false) {
+      const b = document.getElementById("globalBanner");
+      b.style.background = isError ? "#be123c" : "#0f172a";
+      b.innerHTML = isError
+        ? `<i class="fa-solid fa-circle-exclamation"></i><span>${msg}</span>`
+        : `<i class="fa-solid fa-circle-notch fa-spin"></i><span>${msg}</span>`;
+      b.classList.add("show");
+      if (isError) setTimeout(() => b.classList.remove("show"), 4500);
+    }
+    function hideBanner() { document.getElementById("globalBanner").classList.remove("show"); }
+
+    async function loadDocuments() {
+      const res = await fetch("/api/docs");
+      documents = await res.json();
+      renderDocList();
+    }
+
+    function renderDocList() {
+      const query = document.getElementById("docSearch").value.toLowerCase();
+      const folder = document.getElementById("folderFilter").value;
+      const list = document.getElementById("docList");
+      list.innerHTML = "";
+
+      documents
+        .filter(d => (d.title.toLowerCase().includes(query) || d.content.toLowerCase().includes(query)) && (folder === "ALL" || d.folder === folder))
+        .forEach(doc => {
+          const item = document.createElement("div");
+          item.className = `doc-item ${doc.id === currentDocId ? "active" : ""}`;
+          item.innerHTML = `
+            <div onclick="selectDocument(${doc.id})" style="flex:1; min-width:0;">
+              <div class="doc-item-title">${doc.title || "Untitled"}</div>
+              <div class="doc-item-meta">${doc.folder} • ${doc.updated_at.slice(0, 10)}</div>
+            </div>
+            <div class="doc-item-actions">
+              <button class="tool-btn" onclick="duplicateDocument(${doc.id})" title="Duplicate"><i class="fa-regular fa-copy"></i></button>
+              <button class="tool-btn" onclick="deleteDocument(${doc.id})" title="Delete"><i class="fa-regular fa-trash-can"></i></button>
+            </div>
+          `;
+          list.appendChild(item);
+        });
+    }
+
+    function selectDocument(id) {
+      const doc = documents.find(d => d.id === id);
+      if (!doc) return;
+      currentDocId = doc.id;
+      document.getElementById("docTitle").value = doc.title;
+      document.getElementById("docFolder").value = doc.folder || "General";
+      document.getElementById("editor").innerHTML = doc.content;
+      document.getElementById("grammarDocMirror").textContent = document.getElementById("editor").innerText;
+      updateMetrics();
+      renderDocList();
+    }
+
+    async function createNewDoc(title = "Untitled Document", content = "<p></p>", folder = "General") {
+      const res = await fetch("/api/docs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, content, folder })
+      });
+      const newDoc = await res.json();
+      await loadDocuments();
+      selectDocument(newDoc.id);
+      switchView("editor");
+    }
+
+    async function duplicateDocument(id) {
+      const res = await fetch(`/api/docs/${id}/duplicate`, { method: "POST" });
+      const newDoc = await res.json();
+      await loadDocuments();
+      selectDocument(newDoc.id);
+    }
+
+    async function deleteDocument(id) {
+      if (!confirm("Delete this document permanently?")) return;
+      await fetch(`/api/docs/${id}`, { method: "DELETE" });
+      await loadDocuments();
+      if (documents.length > 0) selectDocument(documents[0].id);
+      else createNewDoc();
+    }
+
+    function onEditorInput() {
+      updateMetrics();
+      scheduleAutoSave();
+    }
+
+    function scheduleAutoSave() {
+      document.getElementById("saveStatus").innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+      clearTimeout(autoSaveTimer);
+      autoSaveTimer = setTimeout(() => saveDocument(false), 850);
+    }
+
+    async function saveDocument(saveSnapshot = false) {
+      if (!currentDocId) return;
+      const title = document.getElementById("docTitle").value || "Untitled Document";
+      const folder = document.getElementById("docFolder").value;
+      const content = document.getElementById("editor").innerHTML;
+
+      await fetch(`/api/docs/${currentDocId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, folder, content, save_snapshot: saveSnapshot })
+      });
+
+      const doc = documents.find(d => d.id === currentDocId);
+      if (doc) { doc.title = title; doc.folder = folder; doc.content = content; }
+      renderDocList();
+      document.getElementById("saveStatus").innerHTML = '<i class="fa-solid fa-circle-check"></i> Saved';
+    }
+
+    async function manualSnapshot() {
+      await saveDocument(true);
+      showBanner("Version snapshot saved!");
+      setTimeout(hideBanner, 2000);
+    }
+
+    function execCmd(cmd, val = null) {
+      document.execCommand(cmd, false, val);
+      document.getElementById("editor").focus();
+      onEditorInput();
+    }
+
+    function insertLink() {
+      const url = prompt("Enter URL (https://...):");
+      if (url) execCmd("createLink", url);
+    }
+
+    function insertTable() {
+      execCmd("insertHTML", `<table><thead><tr><th>Column 1</th><th>Column 2</th></tr></thead><tbody><tr><td>Data 1</td><td>Data 2</td></tr></tbody></table><p></p>`);
+    }
+
+    function updateMetrics() {
+      const text = document.getElementById("editor").innerText.trim();
+      const words = text ? text.split(/\s+/).length : 0;
+      const sentences = text ? text.split(/[.!?]+/).filter(s => s.trim().length > 0).length : 0;
+      const readMin = Math.max(1, Math.ceil(words / 200));
+
+      document.getElementById("wordCount").textContent = words;
+      document.getElementById("charCount").textContent = text.length;
+      document.getElementById("sentenceCount").textContent = sentences;
+      document.getElementById("readTime").textContent = words === 0 ? "0 min" : `${readMin} min`;
+    }
+
+    function copyEditorText() {
+      navigator.clipboard.writeText(document.getElementById("editor").innerText);
+      showBanner("Copied document text to clipboard!");
+      setTimeout(hideBanner, 2000);
+    }
+
+    function getTargetText() {
+      const sel = window.getSelection().toString().trim();
+      return sel || document.getElementById("editor").innerText.trim();
+    }
+
+    function applyTemplate(type) {
+      const templates = {
+        email: { title: "Executive Follow-Up Email", html: "<p>Subject: Follow-Up on Project Roadmap</p><p>Hi [Recipient Name],</p><p>Thank you for a productive meeting today. Below is a summary of our key action items:</p><ul><li>Finalize technical specifications by Friday</li><li>Schedule architecture review with stakeholders</li></ul><p>Best regards,<br>[Your Name]</p>" },
+        proposal: { title: "Business Project Proposal", html: "<h1>Project Proposal</h1><h2>1. Executive Summary</h2><p>Describe the business challenge and proposed AI solution.</p><h2>2. Deliverables & Milestones</h2><ul><li>Phase 1: Prototype & Validation</li><li>Phase 2: Production Rollout</li></ul>" },
+        blog: { title: "Thought Leadership Blog Post", html: "<h1>How AI Copilots Are Transforming Modern Workflows</h1><p><b>Introduction:</b> Capture attention with an industry insight.</p><h2>Key Insights</h2><p>Elaborate on your primary thesis with clear examples.</p><h2>Conclusion</h2><p>Summarize takeaways and invite discussion.</p>" },
+        resume: { title: "Professional Cover Letter", html: "<p>Dear Hiring Committee,</p><p>I am excited to submit my application for the [Position] role at [Company]. During my work on [Project], I architected scalable solutions that improved efficiency by [Metric].</p><p>Sincerely,<br>[Your Name]</p>" }
+      };
+      const t = templates[type];
+      createNewDoc(t.title, t.html, "Work & Business");
+    }
+
+    async function handleFileUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const formData = new FormData();
+      formData.append("file", file);
+      showBanner("Extracting text from document...");
+      try {
+        const res = await fetch("/api/upload", { method: "POST", body: formData });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        await createNewDoc(data.title, data.content, "General");
+        hideBanner();
+      } catch (err) {
+        showBanner(err.message, true);
+      } finally {
+        e.target.value = "";
+      }
+    }
+
+    async function exportDocument(format) {
+      const title = document.getElementById("docTitle").value || "document";
+      const text = document.getElementById("editor").innerText;
+      const res = await fetch("/api/export", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ format, title, text })
+      });
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${title}.${format}`;
+      a.click();
+    }
+
+    async function openVersionHistory() {
+      if (!currentDocId) return;
+      const res = await fetch(`/api/docs/${currentDocId}/versions`);
+      const versions = await res.json();
+      const list = document.getElementById("versionList");
+      list.innerHTML = versions.length ? "" : "<p style='color:var(--text-muted);'>No saved snapshots yet. Click 'Save Version' in the toolbar.</p>";
+      versions.forEach(v => {
+        const div = document.createElement("div");
+        div.className = "issue-card";
+        div.style.display = "flex";
+        div.style.justifyContent = "space-between";
+        div.style.alignItems = "center";
+        div.innerHTML = `
+          <div>
+            <strong>${v.saved_at}</strong>
+            <div style="font-size:12px; color:var(--text-muted);">${v.content.replace(/<[^>]*>/g, '').slice(0, 65)}...</div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick='restoreVersion(${JSON.stringify(v.content)})'>Restore</button>
+        `;
+        list.appendChild(div);
+      });
+      openModal("versionModal");
+    }
+
+    function restoreVersion(html) {
+      document.getElementById("editor").innerHTML = html;
+      onEditorInput();
+      closeModal("versionModal");
+    }
+
+    function openCompareModal() {
+      const sel = document.getElementById("compareDocSelect");
+      sel.innerHTML = "";
+      documents.forEach(d => {
+        const opt = document.createElement("option");
+        opt.value = d.id;
+        opt.textContent = d.title;
+        sel.appendChild(opt);
+      });
+      document.getElementById("compLeftTitle").textContent = document.getElementById("docTitle").value;
+      document.getElementById("compLeftBody").textContent = document.getElementById("editor").innerText;
+      renderComparison();
+      openModal("compareModal");
+    }
+
+    function renderComparison() {
+      const otherId = parseInt(document.getElementById("compareDocSelect").value);
+      const doc = documents.find(d => d.id === otherId);
+      if (!doc) return;
+      document.getElementById("compRightTitle").textContent = doc.title;
+      const tmp = document.createElement("div");
+      tmp.innerHTML = doc.content;
+      document.getElementById("compRightBody").textContent = tmp.innerText;
+    }
+
+    async function runGrammarCheck() {
+      const text = document.getElementById("editor").innerText.trim();
+      if (!text) return showBanner("Please enter some text in the editor first.", true);
+      document.getElementById("grammarDocMirror").textContent = text;
+      showBanner("Scanning grammar, spelling & sentence structure...");
+      try {
+        const res = await fetch("/api/ai/grammar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text })
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        currentCorrections = data.corrections || [];
+        renderGrammarCorrections();
+        hideBanner();
+      } catch (err) {
+        showBanner(err.message, true);
+      }
+    }
+
+    function renderGrammarCorrections() {
+      const quickList = document.getElementById("quickGrammarList");
+      const pageList = document.getElementById("pageGrammarList");
+      const quickSummary = document.getElementById("quickGrammarSummary");
+      const pageApplyAll = document.getElementById("pageApplyAllBtn");
+
+      document.getElementById("pageGrammarBadge").textContent = `${currentCorrections.length} Issues`;
+      document.getElementById("quickIssueCount").textContent = `${currentCorrections.length} issue(s) found`;
+
+      if (currentCorrections.length === 0) {
+        quickSummary.classList.add("hidden");
+        pageApplyAll.classList.add("hidden");
+        const okHtml = `<div class="issue-card" style="background:var(--accent-emerald-soft); border-color:var(--accent-emerald); text-align:center; color:var(--accent-emerald); font-weight:600;"><i class="fa-solid fa-circle-check"></i> No grammar or spelling errors found!</div>`;
+        quickList.innerHTML = okHtml;
+        pageList.innerHTML = okHtml;
+        return;
+      }
+
+      quickSummary.classList.remove("hidden");
+      pageApplyAll.classList.remove("hidden");
+
+      const cardsHtml = currentCorrections.map((c, idx) => `
+        <div class="issue-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+            <span class="badge badge-rose">${c.category}</span>
+            <div style="display:flex; gap:5px;">
+              <button class="btn btn-success btn-sm" onclick="acceptGrammar(${idx})">Accept</button>
+              <button class="btn btn-sm" onclick="rejectGrammar(${idx})">Dismiss</button>
+            </div>
+          </div>
+          <div style="margin-bottom:5px; font-size:13px;">
+            <span style="text-decoration:line-through; color:var(--accent-rose);">${c.original}</span>
+            <i class="fa-solid fa-arrow-right" style="margin:0 6px; color:var(--text-muted); font-size:11px;"></i>
+            <strong style="color:var(--accent-emerald);">${c.corrected}</strong>
+          </div>
+          <p style="font-size:12px; color:var(--text-secondary);">${c.explanation}</p>
+        </div>
+      `).join("");
+
+      quickList.innerHTML = cardsHtml;
+      pageList.innerHTML = cardsHtml;
+    }
+
+    function acceptGrammar(idx) {
+      const item = currentCorrections[idx];
+      const editor = document.getElementById("editor");
+      editor.innerHTML = editor.innerHTML.replace(item.original, item.corrected);
+      document.getElementById("grammarDocMirror").textContent = editor.innerText;
+      currentCorrections.splice(idx, 1);
+      renderGrammarCorrections();
+      onEditorInput();
+    }
+
+    function rejectGrammar(idx) {
+      currentCorrections.splice(idx, 1);
+      renderGrammarCorrections();
+    }
+
+    function applyAllGrammar() {
+      const editor = document.getElementById("editor");
+      let html = editor.innerHTML;
+      currentCorrections.forEach(c => { html = html.replace(c.original, c.corrected); });
+      editor.innerHTML = html;
+      document.getElementById("grammarDocMirror").textContent = editor.innerText;
+      currentCorrections = [];
+      renderGrammarCorrections();
+      onEditorInput();
+    }
+
+    function syncEditorToRewrite() {
+      document.getElementById("rewriteSourceBox").value = getTargetText();
+    }
+
+    function selectToneChip(el, tone) {
+      document.querySelectorAll(".tone-chip").forEach(c => c.classList.remove("selected"));
+      el.classList.add("selected");
+      selectedTone = tone;
+    }
+
+    async function runRewriteStudio(action) {
+      const text = document.getElementById("rewriteSourceBox").value.trim();
+      if (!text) return showBanner("Please paste or pull text into the Original Passage box.", true);
+      showBanner(`Rewriting with ${selectedTone} tone...`);
+      try {
+        const res = await fetch("/api/ai/enhance", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, action, tone: selectedTone })
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        latestRewriteHtml = data.result;
+        document.getElementById("rewriteResultBox").innerHTML = data.result;
+        hideBanner();
+      } catch (err) {
+        showBanner(err.message, true);
+      }
+    }
+
+    function copyRewriteResult() {
+      navigator.clipboard.writeText(document.getElementById("rewriteResultBox").innerText);
+      showBanner("Copied rewritten text!");
+      setTimeout(hideBanner, 2000);
+    }
+
+    function sendRewriteToEditor() {
+      if (!latestRewriteHtml) return;
+      document.getElementById("editor").innerHTML = latestRewriteHtml;
+      onEditorInput();
+      switchView("editor");
+    }
+
+    async function runAdvisor() {
+      const text = document.getElementById("editor").innerText.trim();
+      if (!text) return showBanner("Write some content first.", true);
+      showBanner("Generating editorial suggestions...");
+      try {
+        const res = await fetch("/api/ai/suggestions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text })
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        const box = document.getElementById("advisorResults");
+        box.innerHTML = (data.suggestions || []).map(s => `
+          <div class="issue-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span class="badge badge-indigo">${s.type}</span>
+              <button class="btn btn-primary btn-sm" onclick='insertSnippet(${JSON.stringify(s.suggested_addition)})'>+ Apply</button>
+            </div>
+            <strong style="display:block; margin-bottom:4px;">${s.title}</strong>
+            <p style="font-size:12px; color:var(--text-secondary);">${s.explanation}</p>
+          </div>
+        `).join("");
+        hideBanner();
+      } catch (err) {
+        showBanner(err.message, true);
+      }
+    }
+
+    function insertSnippet(html) {
+      document.getElementById("editor").innerHTML += html;
+      onEditorInput();
+    }
+
+    async function runExtraTool(tool, extra = "") {
+      const text = getTargetText();
+      if (!text) return showBanner("Please add text to your document first.", true);
+      showBanner(`Running ${tool}...`);
+      try {
+        const res = await fetch("/api/ai/tool", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text, tool, extra })
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        if (tool === "translate") {
+          latestTranslateHtml = data.result;
+          document.getElementById("translateOutputContent").innerHTML = data.result;
+          document.getElementById("translateOutputBox").classList.remove("hidden");
+        } else {
+          latestToolHtml = data.result;
+          document.getElementById("toolOutputContent").innerHTML = data.result;
+          document.getElementById("toolOutputBox").classList.remove("hidden");
+        }
+        hideBanner();
+      } catch (err) {
+        showBanner(err.message, true);
+      }
+    }
+
+    function insertToolOutput() {
+      document.getElementById("editor").innerHTML += `<hr style="margin:16px 0; border-color:var(--border-color);"/>` + latestToolHtml;
+      onEditorInput();
+    }
+
+    function insertTranslatedOutput() {
+      document.getElementById("editor").innerHTML += `<hr style="margin:16px 0; border-color:var(--border-color);"/>` + latestTranslateHtml;
+      onEditorInput();
+    }
+
+    async function submitContentGenerator() {
+      const topic = document.getElementById("genTopic").value.trim();
+      if (!topic) return showBanner("Please enter a topic or purpose.", true);
+      showBanner("Generating full draft...");
+      try {
+        const docType = document.getElementById("genType").value;
+        const res = await fetch("/api/ai/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            doc_type: docType,
+            tone: document.getElementById("genTone").value,
+            audience: document.getElementById("genAudience").value,
+            length: document.getElementById("genLength").value,
+            topic,
+            points: document.getElementById("genPoints").value
+          })
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        latestGeneratedDraft = { title: `${docType}: ${topic.slice(0, 40)}`, html: data.result };
+        document.getElementById("generatedDraftPreview").innerHTML = data.result;
+        document.getElementById("openDraftInEditorBtn").classList.remove("hidden");
+        hideBanner();
+      } catch (err) {
+        showBanner(err.message, true);
+      }
+    }
+
+    function openGeneratedInEditor() {
+      createNewDoc(latestGeneratedDraft.title, latestGeneratedDraft.html, "Work & Business");
+    }
+
+    async function runPromptImprover() {
+      const prompt = document.getElementById("rawPromptInput").value.trim();
+      if (!prompt) return showBanner("Enter a prompt to optimize.", true);
+      showBanner("Engineering optimized prompt...");
+      try {
+        const res = await fetch("/api/ai/improve-prompt", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ prompt })
+        });
+        const d = await res.json();
+        if (d.error) throw new Error(d.error);
+
+        document.getElementById("origPromptDisplay").textContent = `"${prompt}"`;
+        document.getElementById("missingPromptList").innerHTML = (d.missing_elements || []).map(m => `<li>${m}</li>`).join("");
+        document.getElementById("improvedPromptDisplay").textContent = d.improved_prompt;
+        document.getElementById("promptRoleBadge").textContent = d.role;
+        document.getElementById("promptExplanation").textContent = d.explanation;
+
+        document.getElementById("promptVariations").innerHTML = (d.variations || []).map((v, i) => `
+          <div class="issue-card" style="margin:0;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+              <strong>Variation ${i + 1}</strong>
+              <button class="btn btn-sm" onclick='navigator.clipboard.writeText(${JSON.stringify(v)}); showBanner("Variation copied!"); setTimeout(hideBanner,1500);'>Copy</button>
+            </div>
+            <p style="font-size:12.5px; color:var(--text-secondary);">${v}</p>
+          </div>
+        `).join("");
+
+        document.getElementById("promptResultsArea").classList.remove("hidden");
+        hideBanner();
+      } catch (err) {
+        showBanner(err.message, true);
+      }
+    }
+
+    function copyOptimizedPrompt() {
+      navigator.clipboard.writeText(document.getElementById("improvedPromptDisplay").textContent);
+      showBanner("Optimized prompt copied!");
+      setTimeout(hideBanner, 1800);
+    }
+
+    async function runAnalysis() {
+      const text = document.getElementById("editor").innerText.trim();
+      if (!text) return showBanner("Add text to your document first.", true);
+      showBanner("Analyzing readability, clarity & voice ratio...");
+      try {
+        const res = await fetch("/api/ai/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text })
+        });
+        const d = await res.json();
+        if (d.error) throw new Error(d.error);
+
+        document.getElementById("scoreReadability").textContent = `${d.readability_score}/100`;
+        document.getElementById("scoreLevel").textContent = d.reading_level;
+        document.getElementById("scoreClarity").textContent = `${d.clarity_score}/100`;
+        document.getElementById("scoreVocab").textContent = `Vocabulary: ${d.vocabulary_complexity}`;
+        document.getElementById("scoreGrammar").textContent = `${d.grammar_score}/100`;
+        document.getElementById("scoreTone").textContent = `Tone: ${d.tone_detected}`;
+
+        document.getElementById("activeVoiceTxt").textContent = `${d.active_voice_pct}%`;
+        document.getElementById("passiveVoiceTxt").textContent = `${d.passive_voice_pct}%`;
+        document.getElementById("activeVoiceBar").style.width = `${d.active_voice_pct}%`;
+
+        document.getElementById("repeatedWordsBox").innerHTML = (d.repeated_words || []).length
+          ? d.repeated_words.map(w => `<span class="badge badge-rose">${w}</span>`).join("")
+          : `<span class="badge badge-emerald">No repetitive words detected</span>`;
+
+        document.getElementById("actionableTipsList").innerHTML = (d.actionable_tips || []).map(t => `<li>${t}</li>`).join("");
+
+        document.getElementById("analyticsPlaceholder").classList.add("hidden");
+        document.getElementById("analyticsDashboard").classList.remove("hidden");
+        hideBanner();
+      } catch (err) {
+        showBanner(err.message, true);
+      }
+    }
+  </script>
+</body>
+</html>

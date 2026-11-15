@@ -1,0 +1,855 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* Superchat.in Authentic Warm Ivory, Royal Violet & Obsidian Palette */
+  --bg-app: #faf8f6;
+  --bg-surface: #ffffff;
+  --bg-sidebar: #f6f3f0;
+  --bg-subtle: #f1ede9;
+  --bg-hover: #eae4de;
+
+  --text-primary: #19191b;
+  --text-secondary: #5c5c64;
+  --text-muted: #8a8a93;
+
+  --border-color: #e7e2dc;
+  --border-strong: #d5cec6;
+
+  /* Signature Superchat Royal Violet & Obsidian */
+  --brand-primary: #6d28d9;
+  --brand-hover: #5b21b6;
+  --brand-soft: rgba(109, 40, 217, 0.08);
+  --brand-border: rgba(109, 40, 217, 0.25);
+
+  --obsidian: #18181b;
+  --obsidian-hover: #27272a;
+
+  --accent-emerald: #059669;
+  --accent-emerald-soft: rgba(5, 150, 105, 0.09);
+  --accent-rose: #e11d48;
+  --accent-rose-soft: rgba(225, 29, 72, 0.08);
+  --accent-amber: #d97706;
+  --accent-amber-soft: rgba(217, 119, 6, 0.09);
+
+  --shadow-xs: 0 1px 2px rgba(25, 25, 27, 0.04);
+  --shadow-paper:
+    0 1px 3px rgba(25, 25, 27, 0.04),
+    0 12px 32px -8px rgba(25, 25, 27, 0.06);
+  --shadow-float:
+    0 8px 24px -4px rgba(109, 40, 217, 0.22),
+    0 4px 12px rgba(25, 25, 27, 0.08);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 9999px;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.dark {
+  --bg-app: #111113;
+  --bg-surface: #18181b;
+  --bg-sidebar: #141417;
+  --bg-subtle: #202024;
+  --bg-hover: #27272c;
+
+  --text-primary: #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+
+  --border-color: #27272a;
+  --border-strong: #3f3f46;
+
+  --brand-primary: #8b5cf6;
+  --brand-hover: #7c3aed;
+  --brand-soft: rgba(139, 92, 246, 0.14);
+  --brand-border: rgba(139, 92, 246, 0.32);
+
+  --obsidian: #f4f4f5;
+  --obsidian-hover: #e4e4e7;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-paper: 0 12px 32px rgba(0, 0, 0, 0.45);
+  --shadow-float: 0 16px 36px rgba(0, 0, 0, 0.6);
+}
+
+html.dark .superchat-logo-wrap svg path:first-child {
+  stroke: #f4f4f5;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: transparent; border-radius: 99px; }
+*:hover::-webkit-scrollbar-thumb { background: var(--border-strong); }
+
+/* ---------------- SUPERCHAT TOP NAVBAR ---------------- */
+.topbar {
+  height: 62px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-shrink: 0;
+  z-index: 30;
+}
+
+.brand-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.superchat-logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.brand-title {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
+
+.brand-title span {
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.badge-company {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--brand-soft);
+  color: var(--brand-primary);
+}
+
+.status-pill {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.status-pill i {
+  color: var(--accent-emerald);
+  font-size: 10px;
+}
+
+/* Clean Editorial Nav Links (Matches Superchat Header Links) */
+.nav-switcher {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nav-pill {
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 7px 13px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.16s var(--ease);
+  white-space: nowrap;
+}
+
+.nav-pill i {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.nav-pill:hover {
+  color: var(--text-primary);
+  background: var(--bg-subtle);
+}
+
+.nav-pill.active {
+  background: var(--obsidian);
+  color: var(--bg-surface);
+  font-weight: 600;
+}
+.nav-pill.active i {
+  opacity: 1;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---------------- SUPERCHAT PILL BUTTONS & INPUTS ---------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 15px;
+  font-size: 12.5px;
+  font-weight: 600;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-color);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.15s var(--ease);
+  font-family: inherit;
+}
+
+.btn:hover {
+  background: var(--bg-subtle);
+  border-color: var(--border-strong);
+}
+
+/* Superchat Signature Violet Pill CTA ("Buy now" / "Order the box") */
+.btn-primary {
+  background: var(--brand-primary);
+  border-color: var(--brand-primary);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(109, 40, 217, 0.25);
+}
+
+.btn-primary:hover {
+  background: var(--brand-hover);
+  border-color: var(--brand-hover);
+  transform: translateY(-0.5px);
+}
+
+.btn-success {
+  background: var(--accent-emerald);
+  border-color: var(--accent-emerald);
+  color: #ffffff;
+}
+
+.btn-sm {
+  padding: 5px 12px;
+  font-size: 12px;
+}
+
+.btn-icon {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  color: var(--text-secondary);
+}
+
+.input, .select, .textarea {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.input:focus, .select:focus, .textarea:focus {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px var(--brand-soft);
+}
+
+/* Dropdown */
+.dropdown { position: relative; }
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  width: 175px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: var(--shadow-paper);
+  padding: 5px;
+  z-index: 50;
+}
+.dropdown:hover .dropdown-menu { display: block; }
+.dropdown-item {
+  width: 100%;
+  text-align: left;
+  padding: 8px 11px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 12.5px;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dropdown-item:hover { background: var(--bg-subtle); }
+
+/* ---------------- APP LAYOUT ---------------- */
+.app-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.sidebar-left {
+  width: 256px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.sidebar-header {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.search-wrap { position: relative; }
+.search-wrap i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.search-wrap input {
+  padding-left: 32px;
+  border-radius: var(--radius-pill);
+  font-size: 12.5px;
+}
+
+.doc-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.doc-item {
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.14s;
+}
+
+.doc-item:hover { background: var(--bg-hover); }
+
+.doc-item.active {
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-xs), 0 0 0 1px var(--border-color);
+}
+
+.doc-item-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.doc-item.active .doc-item-title {
+  color: var(--brand-primary);
+}
+
+.doc-item-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.doc-item-actions {
+  display: none;
+  gap: 2px;
+}
+.doc-item:hover .doc-item-actions { display: flex; }
+
+.templates-box {
+  padding: 14px;
+  border-top: 1px solid var(--border-color);
+}
+
+.section-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.template-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.template-btn {
+  padding: 7px 10px;
+  border-radius: 9px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-size: 11.5px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.14s;
+}
+.template-btn:hover {
+  color: var(--brand-primary);
+  border-color: var(--brand-border);
+  background: var(--brand-soft);
+}
+
+/* ---------------- WORKSPACE STAGE ---------------- */
+.main-stage {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.view-section {
+  display: none;
+  flex: 1;
+  overflow: hidden;
+}
+.view-section.active {
+  display: flex;
+}
+
+/* VIEW 1: EDITORIAL CANVAS */
+.editor-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg-app);
+}
+
+.editor-toolbar {
+  height: 44px;
+  padding: 0 18px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tool-btn {
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 7px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: all 0.12s;
+}
+.tool-btn:hover {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 16px;
+  background: var(--border-color);
+  margin: 0 6px;
+}
+
+.paper-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 32px 40px 64px;
+}
+
+.paper-sheet {
+  max-width: 790px;
+  margin: 0 auto;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  box-shadow: var(--shadow-paper);
+  padding: 52px 64px;
+  min-height: 82vh;
+}
+
+.paper-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 18px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Bold Superchat Hero-Style Document Title */
+.doc-title-input {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  width: 100%;
+  outline: none;
+}
+.doc-title-input::placeholder {
+  color: var(--text-muted);
+}
+
+#editor {
+  min-height: 60vh;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 15.5px;
+  line-height: 1.78;
+  color: var(--text-primary);
+}
+#editor:empty::before {
+  content: "Start writing, paste your draft, or import a document...";
+  color: var(--text-muted);
+  pointer-events: none;
+}
+#editor h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 25px; font-weight: 800; letter-spacing: -0.03em; margin: 22px 0 10px; }
+#editor h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: -0.02em; margin: 18px 0 8px; }
+#editor h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16.5px; font-weight: 700; margin: 14px 0 6px; }
+#editor p { margin-bottom: 14px; }
+#editor ul, #editor ol { padding-left: 22px; margin-bottom: 14px; }
+#editor li { margin-bottom: 5px; }
+#editor a { color: var(--brand-primary); text-decoration: underline; text-underline-offset: 3px; }
+#editor table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+#editor th { background: var(--bg-subtle); font-weight: 600; }
+#editor th, #editor td { border: 1px solid var(--border-color); padding: 9px 12px; text-align: left; }
+
+.statusbar {
+  height: 34px;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-color);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+.metrics-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.metrics-group strong {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+/* Right Copilot Drawer */
+.sidebar-right {
+  width: 356px;
+  background: var(--bg-surface);
+  border-left: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.copilot-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-sidebar);
+}
+
+.copilot-tab {
+  padding: 10px 4px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  transition: all 0.14s;
+}
+
+.copilot-tab:hover { color: var(--text-primary); }
+
+.copilot-tab.active {
+  color: var(--brand-primary);
+  border-bottom-color: var(--brand-primary);
+  background: var(--bg-surface);
+}
+
+.copilot-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+/* ---------------- DEDICATED FULL-PAGE WORKSPACES ---------------- */
+.dedicated-page {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px 36px 48px;
+  background: var(--bg-app);
+}
+
+.page-container {
+  max-width: 1080px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.page-header-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 22px 26px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow-xs);
+}
+
+.page-header-card h2 {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  margin-bottom: 4px;
+}
+
+.page-header-card p {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-xs);
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--text-primary);
+}
+
+.issue-card {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-sidebar);
+  margin-bottom: 9px;
+}
+
+.badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.badge-rose { background: var(--accent-rose-soft); color: var(--accent-rose); }
+.badge-emerald { background: var(--accent-emerald-soft); color: var(--accent-emerald); }
+.badge-indigo { background: var(--brand-soft); color: var(--brand-primary); }
+.badge-amber { background: var(--accent-amber-soft); color: var(--accent-amber); }
+
+/* Tone Pill Chips */
+.tone-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 7px;
+}
+
+.tone-chip {
+  padding: 7px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-color);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.14s;
+}
+.tone-chip:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+.tone-chip.selected {
+  background: var(--obsidian);
+  border-color: var(--obsidian);
+  color: var(--bg-surface);
+}
+
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.action-card-btn {
+  padding: 10px 13px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 12.5px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.14s;
+}
+.action-card-btn:hover {
+  border-color: var(--brand-primary);
+  background: var(--brand-soft);
+  color: var(--brand-primary);
+}
+
+.stat-box {
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  text-align: center;
+  border: 1px solid var(--border-color);
+  background: var(--bg-surface);
+  box-shadow: var(--shadow-xs);
+}
+.stat-number {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+/* Superchat Floating Violet Pill Toast (Matches "Chat with us" pill) */
+.global-banner {
+  position: fixed;
+  bottom: 22px;
+  right: 24px;
+  padding: 11px 20px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, #6d28d9 0%, #4f46e5 100%);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: var(--shadow-float);
+  display: none;
+  align-items: center;
+  gap: 10px;
+  z-index: 100;
+}
+.global-banner.show { display: flex; }
+
+/* Modals */
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(25, 25, 27, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 60;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-backdrop.show { display: flex; }
+.modal-box {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  width: 100%;
+  max-width: 680px;
+  padding: 24px;
+  box-shadow: var(--shadow-paper);
+}
+
+.hidden { display: none !important; }
+
+html.dark .superchat-logo-wrap svg path {
+  stroke: #f4f4f5;
+}
