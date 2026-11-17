@@ -7,6 +7,7 @@ from flask import Flask, render_template, request, jsonify, send_file
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+from google.genai import errors
 import docx
 from pypdf import PdfReader
 from fpdf import FPDF
@@ -19,7 +20,11 @@ DB_PATH = "documents.db"
 # Initialize Gemini Client
 api_key = os.getenv("GEMINI_API_KEY")
 client = genai.Client(api_key=api_key) if api_key else None
-MODEL_ID = "gemini-3.5-flash-lite"
+FALLBACK_MODELS = [
+    "gemini-3.5-flash-lite",
+    "gemini-3.8-flash",
+    "gemini-3.5-flash",
+]
 
 
 # ---------------- DATABASE SETUP ----------------
@@ -54,7 +59,7 @@ def init_db():
     count = c.execute("SELECT COUNT(*) FROM documents").fetchone()[0]
     if count == 0:
         now = datetime.now().strftime("%Y-%m-%d %H:%M")
-        starter_html = """<h1>Welcome to AuraWrite AI Studio</h1>
+        starter_html = """<h1>Welcome to Superchat Genie AI Studio</h1>
 <p>Start typing here, paste an article, or upload a <b>DOCX</b>, <b>PDF</b>, or <b>TXT</b> file from the top bar.</p>
 <p>Try selecting any paragraph and using the right-hand panel to check grammar, adjust tone, analyze readability, or engineer better AI prompts.</p>"""
         c.execute(
@@ -68,10 +73,11 @@ def init_db():
 init_db()
 
 
-# ---------------- AI HELPER ----------------
+# ---------------- AI HELPER (LOW-LATENCY + FALLBACK) ----------------
 def ask_gemini(prompt, system_instruction="", json_mode=False):
     if not client:
         raise ValueError("GEMINI_API_KEY is missing. Add it to your .env file or server environment variables.")
+
     config_args = {
         "system_instruction": system_instruction or "You are an expert professional writing assistant and editor.",
         "temperature": 0.4 if json_mode else 0.7,
@@ -79,12 +85,24 @@ def ask_gemini(prompt, system_instruction="", json_mode=False):
     if json_mode:
         config_args["response_mime_type"] = "application/json"
 
-    response = client.models.generate_content(
-        model=MODEL_ID,
-        contents=prompt,
-        config=types.GenerateContentConfig(**config_args),
-    )
-    return response.text
+    config = types.GenerateContentConfig(**config_args)
+    last_error = None
+
+    for model_name in FALLBACK_MODELS:
+        try:
+            response = client.models.generate_content(
+                model=model_name,
+                contents=prompt,
+                config=config,
+            )
+            return response.text
+        except errors.APIError as e:
+            last_error = e
+            if e.code in (404, 429, 503):
+                continue
+            raise e
+
+    raise last_error
 
 
 # ---------------- FRONTEND ROUTE ----------------
